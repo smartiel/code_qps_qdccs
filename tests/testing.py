@@ -8,12 +8,12 @@ import numpy as np
 
 SIMULATORS = []
 
-try:
-    from qps.mps import MPS
+# try:
+#     from qps.mps import MPS
 
-    SIMULATORS.append(MPS)
-except ImportError:
-    pass
+#     SIMULATORS.append(MPS)
+# except ImportError:
+#     pass
 
 
 try:
@@ -23,12 +23,12 @@ try:
 except ImportError:
     pass
 
-try:
-    from qps.tensor import TensorContraction
+# try:
+#     from qps.tensor import TensorContraction
 
-    SIMULATORS.append(TensorContraction)
-except ImportError:
-    pass
+#     SIMULATORS.append(TensorContraction)
+# except ImportError:
+#     pass
 
 
 HADAMARD = np.array([[1, 1], [1, -1]]) / np.sqrt(2.0)
@@ -73,6 +73,12 @@ CIRCUITS = []
 RESULTS = []
 NAMES = []
 
+# Some tests that only works when qubit indexes are ignored
+circuit = [(HADAMARD, [0]), (CNOT, [0, 1])]
+result = [('00', 1/np.sqrt(2.)), ('11', 1/np.sqrt(2.))]
+CIRCUITS.append(circuit)
+RESULTS.append(result)
+NAMES.append("simple")
 # Some boring tests to check that the bit ordering is correct
 for nqbits in range(2, 10):
     circuit = [(PAULI_X, [0]), (ID, [nqbits - 1])]
