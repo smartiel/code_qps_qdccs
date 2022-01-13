@@ -75,7 +75,7 @@ NAMES = []
 
 # Some tests that only works when qubit indexes are ignored
 circuit = [(HADAMARD, [0]), (CNOT, [0, 1])]
-result = [('00', 1/np.sqrt(2.)), ('11', 1/np.sqrt(2.))]
+result = [('00', 1/2.), ('11', 1/2.)]
 CIRCUITS.append(circuit)
 RESULTS.append(result)
 NAMES.append("simple")
