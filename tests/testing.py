@@ -8,12 +8,11 @@ import numpy as np
 
 SIMULATORS = []
 
-# try:
-#     from qps.mps import MPS
-
-#     SIMULATORS.append(MPS)
-# except ImportError:
-#     pass
+try:
+    from qps.mps import MPS
+    SIMULATORS.append(MPS)
+except ImportError:
+    pass
 
 
 try:
@@ -22,14 +21,6 @@ try:
     SIMULATORS.append(Direct)
 except ImportError:
     pass
-
-# try:
-#     from qps.tensor import TensorContraction
-
-#     SIMULATORS.append(TensorContraction)
-# except ImportError:
-#     pass
-
 
 HADAMARD = np.array([[1, 1], [1, -1]]) / np.sqrt(2.0)
 CNOT = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]])
@@ -68,6 +59,12 @@ def get_random_lnn_circuit(dim, depth):
             _circuit.append((CONTROLED_Z, [i, i + 1]))
     return _circuit
 
+def get_ghz_circuit(dim):
+    circuit = []
+    circuit.append((HADAMARD, [0]))
+    for i in range(1, dim):
+        circuit.append((CNOT, [0, i]))
+    return circuit
 
 CIRCUITS = []
 RESULTS = []
@@ -112,6 +109,11 @@ for nqbits in range(2, 15):
     RESULTS.append(result)
     NAMES.append(f"uniform_distrib_n={nqbits}")
 
+# GHZ but with non consecutive gates
+for nqbits in range(2, 15):
+    CIRCUITS.append(get_ghz_circuit(nqbits))
+    NAMES.append(f"ghz_non_consec_{nqbits}")
+    RESULTS.append([('1' * nqbits, 0.5), ('0'*nqbits, 0.5)])
 
 @pytest.mark.parametrize("data", zip(CIRCUITS, RESULTS), ids=NAMES)
 @pytest.mark.parametrize("simulator_class", SIMULATORS)
@@ -126,3 +128,18 @@ def test_strong_simulation(simulator_class: type, data):
     simulator.simulate_circuit(_circuit)
     for state, proba in expected_results:
         assert np.isclose(simulator.get_probability(state), proba)
+
+
+@pytest.mark.parametrize("nqbits", range(2, 10))
+@pytest.mark.parametrize("simulator_class", SIMULATORS)
+def test_weak_simulation_ghz(simulator_class, nqbits):
+    """
+    Checks that sampling a Bell pair does only yield correct samples
+    """
+    circuit = get_ghz_circuit(nqbits)
+    simulator = simulator_class(nqbits)
+    simulator.simulate_circuit(circuit)
+    samples = [simulator.get_sample() for _ in range(23)]
+    for sample in samples:
+        assert all(sample) or not any(sample)
+
