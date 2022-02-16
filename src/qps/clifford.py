@@ -37,6 +37,12 @@ class Tableau:
         """
         # TODO :)
 
+    def get_circuit(self):
+        """
+        Generate a circuit that prepares the stabilizer state.
+        """
+        # TODO :)
+
 
 
 
