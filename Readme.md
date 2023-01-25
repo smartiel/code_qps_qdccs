@@ -21,9 +21,9 @@ The code is already packaged. First create and activate a virtualenv :
 virtualenv dev_env
 source dev_env/bin/activate
 ```
-Then install the package:
+Then install the package in place (dirty but efficient):
 ```bash
-python setup.py install
+python setup.py install -e .
 ```
 
 You should then be able to run the tests (that will fail, all good):

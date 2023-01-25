@@ -10,6 +10,7 @@ SIMULATORS = []
 
 try:
     from qps.mps import MPS
+
     SIMULATORS.append(MPS)
 except ImportError:
     pass
@@ -33,9 +34,7 @@ def rotation_x(theta):
     """
     Rotation around the X axis of a qubit
     """
-    return np.cos(theta / 2) * np.eye(2) - 1j * np.sin(theta / 2) * np.array(
-        [[0, 1], [1, 0]]
-    )
+    return np.cos(theta / 2) * np.eye(2) - 1j * np.sin(theta / 2) * np.array([[0, 1], [1, 0]])
 
 
 def rotation_z(theta):
@@ -59,6 +58,7 @@ def get_random_lnn_circuit(dim, depth):
             _circuit.append((CONTROLED_Z, [i, i + 1]))
     return _circuit
 
+
 def get_ghz_circuit(dim):
     circuit = []
     circuit.append((HADAMARD, [0]))
@@ -66,13 +66,14 @@ def get_ghz_circuit(dim):
         circuit.append((CNOT, [0, i]))
     return circuit
 
+
 CIRCUITS = []
 RESULTS = []
 NAMES = []
 
 # Some tests that only works when qubit indexes are ignored
 circuit = [(HADAMARD, [0]), (CNOT, [0, 1])]
-result = [('00', 1/2.), ('11', 1/2.)]
+result = [("00", 1 / 2.0), ("11", 1 / 2.0)]
 CIRCUITS.append(circuit)
 RESULTS.append(result)
 NAMES.append("simple")
@@ -113,7 +114,8 @@ for nqbits in range(2, 15):
 for nqbits in range(2, 15):
     CIRCUITS.append(get_ghz_circuit(nqbits))
     NAMES.append(f"ghz_non_consec_{nqbits}")
-    RESULTS.append([('1' * nqbits, 0.5), ('0'*nqbits, 0.5)])
+    RESULTS.append([("1" * nqbits, 0.5), ("0" * nqbits, 0.5)])
+
 
 @pytest.mark.parametrize("data", zip(CIRCUITS, RESULTS), ids=NAMES)
 @pytest.mark.parametrize("simulator_class", SIMULATORS)
@@ -142,4 +144,3 @@ def test_weak_simulation_ghz(simulator_class, nqbits):
     samples = [simulator.get_sample() for _ in range(23)]
     for sample in samples:
         assert all(sample) or not any(sample)
-
