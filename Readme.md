@@ -23,7 +23,7 @@ source dev_env/bin/activate
 ```
 Then install the package in place (dirty but efficient):
 ```bash
-python setup.py install -e .
+python -m pip install -e .
 ```
 
 You should then be able to run the tests (that will fail, all good):
