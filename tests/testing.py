@@ -73,7 +73,7 @@ NAMES = []
 
 # Some tests that only works when qubit indexes are ignored
 circuit = [(HADAMARD, [0]), (CNOT, [0, 1])]
-result = [("00", 1 / 2.0), ("11", 1 / 2.0)]
+result = [((0,0), 1 / 2.0), ((1,1), 1 / 2.0)]
 CIRCUITS.append(circuit)
 RESULTS.append(result)
 NAMES.append("simple")
@@ -81,7 +81,7 @@ NAMES.append("simple")
 for nqbits in range(2, 10):
     circuit = [(PAULI_X, [0]), (ID, [nqbits - 1])]
 
-    result = [("1" + "0" * (nqbits - 1), 1)]
+    result = [((1,) + (0,) * (nqbits - 1), 1)]
     CIRCUITS.append(circuit)
     RESULTS.append(result)
     NAMES.append(f"bitorder_n={nqbits}")
@@ -91,8 +91,7 @@ for nqbits in range(2, 20):
     circuit = [(HADAMARD, [0])]
     circuit.extend(list((CNOT, [i, i + 1]) for i in range(nqbits - 1)))
     CIRCUITS.append(circuit)
-    # We will just check these two probabilities :) it should be enough :p
-    result = [("0" * nqbits, 0.5), ("1" * nqbits, 0.5)]
+    result = [((1,) * nqbits, 0.5), ((0,) * nqbits, 0.5)]
     RESULTS.append(result)
     NAMES.append(f"ghz_n={nqbits}")
 
@@ -102,7 +101,7 @@ for nqbits in range(2, 15):
     CIRCUITS.append(circuit)
     result = [
         (
-            "".join(map(str, np.random.choice(["0", "1"], size=nqbits, replace=True))),
+            tuple(np.random.choice([0, 1], size=nqbits, replace=True).tolist()),
             1 / (1 << nqbits),
         )
         for _ in range(100)
@@ -114,7 +113,7 @@ for nqbits in range(2, 15):
 for nqbits in range(2, 15):
     CIRCUITS.append(get_ghz_circuit(nqbits))
     NAMES.append(f"ghz_non_consec_{nqbits}")
-    RESULTS.append([("1" * nqbits, 0.5), ("0" * nqbits, 0.5)])
+    RESULTS.append([((1,) * nqbits, 0.5), ((0,) * nqbits, 0.5)])
 
 
 @pytest.mark.parametrize("data", zip(CIRCUITS, RESULTS), ids=NAMES)
@@ -128,6 +127,7 @@ def test_strong_simulation(simulator_class: type, data):
     _nqbits = max(max(qbits) for _, qbits in _circuit) + 1
     simulator = simulator_class(_nqbits)
     simulator.simulate_circuit(_circuit)
+    print(expected_results)
     for state, proba in expected_results:
         assert np.isclose(simulator.get_probability(state), proba)
 

@@ -26,10 +26,30 @@ Then install the package in place (dirty but efficient):
 python -m pip install -e .
 ```
 
-You should then be able to run the tests (that will fail, all good):
+
+# Testing
+
+You can run the tests using the following command line (requires pytest):
+
 ```bash
 python -m pytest tests/testing.py
 ```
+
+In order to restrict tests to a single simulator you can use the `-k` option:
+
+```bash
+python -m pytest tests/testing.py -k Direct
+```
+
+You can cumulate filters. The following line will run test uniform_distrib_n for simulator Direct and restricted to n=3.
+
+```bash
+python -m pytest tests/testing.py -k "Direct and uniform_distrib_n and 3"
+```
+
+
+
+
 
 # Development
 
