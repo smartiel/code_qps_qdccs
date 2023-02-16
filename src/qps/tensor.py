@@ -70,6 +70,11 @@ class TensorNetwork(nx.Graph):
         treewidth, tree_dec = nx.algorithms.approximation.treewidth_min_degree(nx.line_graph(self))
         return edge_order_to_path(decomposition_to_order(tree_dec), self.order())
 
+    def contract(self):
+        """Contracts the network via opt_einsum and find_order"""
+        order = self.find_order()
+        return oe.contract(self.get_einsum_expression(), *self.get_tensors(), optimize=order)
+
 
 def _find_in_list(elem, positions):
     for i, bucket in enumerate(positions):
@@ -118,6 +123,7 @@ class TensorContraction(StrongSimulator, WeakSimulator):
 
     def simulate_gate(self, gate, qubits):
         """TODO : add the gate to the network"""
+        tensorindex, legindex = self.wires[qubits[0]]
 
     def get_probability(self, classical_state):
         """TODO contract the network"""
