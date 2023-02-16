@@ -12,7 +12,7 @@ or create a virtualenv and install it
 ```bash
 virtualenv dev_env
 source dev_env/bin/activate
-python3 -m pip install numpy
+python3 -m pip install numpy opt_einsum networkx
 ```
 # A quantum circuit simulation library
 
