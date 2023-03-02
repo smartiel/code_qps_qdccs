@@ -4,7 +4,7 @@ We will fill up the notebook in the folder `notebooks`.
 It simply requires numpy: you can either install it "globally":
 
 ```bash
-python3 -m pip install numpy
+python3 -m pip install numpy opt_einsum networkx
 ```
 
 or create a virtualenv and install it
@@ -14,6 +14,8 @@ virtualenv dev_env
 source dev_env/bin/activate
 python3 -m pip install numpy opt_einsum networkx
 ```
+
+
 # A quantum circuit simulation library
 
 The code is already packaged. First create and activate a virtualenv :

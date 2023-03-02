@@ -23,6 +23,12 @@ try:
 except ImportError:
     pass
 
+try:
+    from qps.tensor import TensorContraction
+
+except ImportError:
+    pass
+
 HADAMARD = np.array([[1, 1], [1, -1]]) / np.sqrt(2.0)
 CNOT = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1], [0, 0, 1, 0]])
 PAULI_X = np.array([[0, 1], [1, 0]])
@@ -73,7 +79,7 @@ NAMES = []
 
 # Some tests that only works when qubit indexes are ignored
 circuit = [(HADAMARD, [0]), (CNOT, [0, 1])]
-result = [((0,0), 1 / 2.0), ((1,1), 1 / 2.0)]
+result = [((0, 0), 1 / 2.0), ((1, 1), 1 / 2.0)]
 CIRCUITS.append(circuit)
 RESULTS.append(result)
 NAMES.append("simple")
@@ -144,3 +150,25 @@ def test_weak_simulation_ghz(simulator_class, nqbits):
     samples = [simulator.get_sample() for _ in range(23)]
     for sample in samples:
         assert all(sample) or not any(sample)
+
+
+@pytest.mark.parametrize("nqbits", [2, 3, 5, 10, 20, 40, 50])
+def test_comparison_random(nqbits):
+    """
+    Generates 5 random shallow circuits over `nqbits` qbits
+    simulates them with MPS and TensorContraction
+    Pick 10 random states and ask for their probabilities.
+    Compare the results.
+    """
+    for _ in range(5):
+        circuit = get_random_lnn_circuit(nqbits, 4)
+        states = [tuple(np.random.choice([0, 1]) for _ in range(nqbits)) for _ in range(10)]
+        mps = MPS(nqbits)
+        mps.simulate_circuit(circuit)
+        results_mps = [mps.get_probability(state) for state in states]
+
+        tnc = TensorContraction(nqbits)
+        tnc.simulate_circuit(circuit)
+        results_tnc = [tnc.get_probability(state) for state in states]
+
+        assert all(np.isclose(r1, r2) for r1, r2 in zip(results_mps, results_tnc))
